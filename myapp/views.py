@@ -5,7 +5,6 @@ from .models import Question,Choice
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .. import Django_Full_Project
 
 class HomeView(generic.ListView):
     template_name = 'myapp/home.html'
