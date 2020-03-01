@@ -1,37 +1,29 @@
 from django.shortcuts import render ,get_object_or_404
-
 # Create your views here.
-
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 from .models import Question,Choice
-
 from django.urls import reverse
+from django.views import generic
+
+class HomeView(generic.ListView):
+    template_name = 'myapp/home.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
 
 
-def home(request):
-    try :
-        latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    except:
-        raise Http404
-
-    template = ('myapp/home.html')
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return render(request,template,context)
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'myapp/detail.html'
 
 
+class ResultView(generic.DetailView):
+    model = Question
+    template_name = 'myapp/results.html'
 
-def detail(request, question_id):
-    try:
-        question = Question.objects.get(pk=question_id)
-    except Question.DoesNotExist:
-        raise Http404("Question does not exist")
-    return render(request, 'myapp/detail.html', {'question': question})
 
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'myapp/results.html', {'question': question})
 
 def vote(request, question_id):
     question = get_object_or_404(Question,pk = question_id)
